@@ -1,0 +1,76 @@
+# ~/.profile: executed by the command interpreter for login shells.
+# This file is not read by bash(1), if ~/.bash_profile or ~/.bash_login
+# exists.
+# see /usr/share/doc/bash/examples/startup-files for examples.
+# the files are located in the bash-doc package.
+
+# the default umask is set in /etc/profile; for setting the umask
+# for ssh logins, install and configure the libpam-umask package.
+#umask 022
+
+# if running bash
+if [ -n "$BASH_VERSION" ]; then
+    # include .bashrc if it exists
+    if [ -f "$HOME/.bashrc" ]; then
+	. "$HOME/.bashrc"
+    fi
+fi
+
+# set PATH so it includes user's private bin if it exists
+if [ -d "$HOME/bin" ] ; then
+    PATH="$HOME/bin:$PATH"
+fi
+
+# set PATH so it includes user's private bin if it exists
+if [ -d "$HOME/.local/bin" ] ; then
+    PATH="$HOME/.local/bin:$PATH"
+fi
+
+
+if [ -f "$home/.nix-profile/etc/profile.d/nix.sh" ]; then
+    source $HOME/.nix-profile/etc/profile.d/nix.sh
+fi
+
+export PATH="$PATH:$HOME/.nix-profile/bin"
+
+# Home-Manager
+source "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh"
+
+function include() {
+    [[ -f "${1}" ]] && . "${1}" >/dev/null 2>&1
+}
+
+export TERM=xterm-256color
+[[ ! -z ${TMUX+x} ]] && export TERM=screen-256color
+
+readonly __ps1_reset=$(tput sgr0)
+readonly __ps1_red=$(
+    tput bold
+    tput setaf 196
+)
+readonly __ps1_grey=$(tput setaf 240)
+readonly __ps1_yellow=$(
+    tput bold
+    tput setaf 3
+)
+readonly __ps1_lightgreen=$(tput setaf 34)
+readonly __ps1_blue=$(
+    tput bold
+    tput setaf 6
+)
+
+function __ps1_failed_exit() {
+    local rc="${?}"
+    if (("${rc}" != 0)); then
+        echo "[${rc}]"
+    fi
+}
+
+GIT_PS1_SHOWDIRTYSTATE=true
+
+PS1=''
+PS1+='\[${__ps1_red}\]$(__ps1_failed_exit)'
+PS1+='\[${__ps1_yellow}\] ''\[${__ps1_lightgreen}\]$ '
+PS1+='\[${__ps1_blue}\]$(__git_ps1 "[%s]")'
+PS1+='\[${__ps1_grey}\]\w'
+PS1+='\[${__ps1_reset}\] '

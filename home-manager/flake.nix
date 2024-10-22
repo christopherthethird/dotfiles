@@ -1,26 +1,27 @@
 {
-    description = "christopherthethird";
-    inputs = {
-        nixpkgs = {
-            url = "github:nixos/nixpkgs/nixpkgs-unstable";
-        };
-        home-manager = {
-            url = "github:nix-community/home-manager";
-            inputs.nixpkgs.follows = "nixpkgs";
-        };
+  description = "christopherthethird";
+  inputs = {
+    nixpkgs = {
+      url = "github:nixos/nixpkgs/nixpkgs-unstable";
     };
-    outputs = { nixpkgs, home-manager, ... }:
+    home-manager = {
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+  };
+  outputs =
+    { nixpkgs, home-manager, ... }:
     let
-     config = import ../config.nix;
-    in 
+      config = import ../config.nix;
+    in
     {
-        packages.x86_64-linux.homeConfigurations = {
-            "${config.user_name}" = home-manager.lib.homeManagerConfiguration {
-                pkgs = import nixpkgs { system = "x86_64-linux"; };
-                modules = [
-                    ./home.nix
-                ];
-            };
+      packages.x86_64-linux.homeConfigurations = {
+        "${config.user_name}" = home-manager.lib.homeManagerConfiguration {
+          pkgs = import nixpkgs { system = "x86_64-linux"; };
+          modules = [
+            ./home.nix
+          ];
         };
+      };
     };
 }

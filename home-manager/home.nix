@@ -1,16 +1,25 @@
 { config, pkgs, ... }:
 
-let 
-config = import ../config.nix;
-in 
+let
+  config = import ../config.nix;
+in
 {
-    nixpkgs.config.allowUnfree = true;
+  nixpkgs.config.allowUnfree = true;
 
-    home = with config; {
-        username = user_name;
-        homeDirectory = "/home/${user_name}";
-        stateVersion = "24.11";
-    };
+  home = with config; {
+    username = user_name;
+    homeDirectory = "/home/${user_name}";
+    stateVersion = "24.11";
 
-programs.home-manager.enable=true;
+    packages =
+      with pkgs;
+      (import ../packages.nix {
+        pkgs = pkgs;
+      });
+
+  };
+
+  imports = [
+    ../programs.nix
+  ];
 }
